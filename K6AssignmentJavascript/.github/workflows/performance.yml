@@ -1,0 +1,23 @@
+name: Performance Test
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: 
+
+jobs:
+  k6_test:
+    name: Run k6 Performance Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Run k6 test
+        uses: grafana/k6-action@v0.3.1
+        with:
+          # Note: We remove the folder name from the path here because 
+          # we set the 'directory' below.
+          filename: Tests/logintest.js
+          flags: --project-base-path ./BibiK6Assignment
