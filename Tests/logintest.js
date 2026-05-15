@@ -3,30 +3,28 @@ import papaparse from 'https://jslib.k6.io/papaparse/5.1.1/index.js';
 import { login } from '../Requests/login.js';
 import { validateLoginResponse } from '../checks/authchecks.js';
 import { sleep } from 'k6';
+import { TEST_CONFIG } from '../config/constant.js';
 
-// 1. Load the CSV data
 const userData = new SharedArray('users', function () {
-    return papaparse.parse(open('../data/Book(Sheet1).csv'), { header: true }).data;
+    return papaparse.parse(open('../data/Book(Sheet1).csv'), { 
+        header: true, 
+        skipEmptyLines: true 
+    }).data;
 });
 
-export const options = {
-    vus: 3,         // Run 3 virtual users
-    iterations: 3,  // Total runs
-};
+export const options = TEST_CONFIG;
 
 export default function () {
-    // 2. Pick a unique user for each of the 3 virtual users
-    const user = userData[__VU - 1];
+    // Selects a user based on the Virtual User ID
+    const user = userData[(__VU - 1) % userData.length];
 
-    // 3. Pass the CSV data into your login function
-    const loginRes = login(
-        user.username, 
-        user.password
-    );
+    // Calls the login function using CSV data
+    const loginRes = login(user.username, user.password);
 
+    // Runs the validation checks
     validateLoginResponse(loginRes);
 
-    console.log(`User ${__VU} (Email: ${user.username}) response: ${loginRes.body}`);
+    console.log(`VU ${__VU} | User: ${user.username} | Status: ${loginRes.status}`);
 
     sleep(1);
 }

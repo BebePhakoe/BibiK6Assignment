@@ -1,6 +1,6 @@
 export const TEST_CONFIG = {
     vus: 3,
-    duration: '10s',
+    iterations: 3,
 };
 
 export const HEADERS = {
