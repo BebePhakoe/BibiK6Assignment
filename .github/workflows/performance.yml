@@ -17,4 +17,7 @@ jobs:
       - name: Run k6 test
         uses: grafana/k6-action@v0.3.1
         with:
-          filename: ./BibiK6Assignment/Tests/logintest.js
+          # Note: We remove the folder name from the path here because 
+          # we set the 'directory' below.
+          filename: Tests/logintest.js
+          flags: --project-base-path ./BibiK6Assignment
